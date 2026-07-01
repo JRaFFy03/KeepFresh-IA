@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KeepFresh Prototype</title>
     <link rel="stylesheet" href="style.css">
+    <script src="app.js"></script>
 </head>
 <body>
 
@@ -102,35 +103,29 @@
             </div>
         </div>
 
-        <div id="screen-app-main" class="screen">
+        <div id="screen-scan-selector" class="screen main-app-view">
             <div class="app-header">
-                <span class="back-arrow" onclick="detenerWebcam(); switchScreen('screen-scan-selector')">⬅️ Volver</span>
-                <span class="app-brand" id="camera-title-mode">Escáner IA</span>
+                <span class="app-brand">KeepFresh</span>
             </div>
-            
-            <div class="camera-view-container">
-                <div id="webcam-container"></div>
+            <div class="selector-container scroll-container-view" onscroll="handleScrollDetection(this)">
+                <h3>¿Qué deseas hacer hoy?</h3>
+                <p>Elige una opción para gestionar tus alimentos:</p>
                 
-                <div class="scanner-overlay">
-                    <p class="scan-instructions" id="camera-instructions-text">Enfoque el producto para analizar en tiempo real.</p>
-                    <div class="scan-frame">
-                        <div class="corner top-left"></div>
-                        <div class="corner top-right"></div>
-                        <div class="corner bottom-left"></div>
-                        <div class="corner bottom-right"></div>
-                        <div class="scan-line"></div>
+                <div class="mode-card" onclick="selectScanMode('individual')">
+                    <div class="mode-icon">🍎</div>
+                    <div class="mode-info">
+                        <h4>Producto Individual</h4>
+                        <p>Análisis riguroso multi-ángulo por seguridad trasera/frontal.</p>
                     </div>
                 </div>
-            </div>
 
-            <div id="resultado-ia-vivo" style="text-align: center; font-size: 16px; font-weight: bold; color: #2e7d32; padding: 10px; background: rgba(255,255,255,0.9); margin: 0 20px; border-radius: 8px; border: 1px solid #c8e6c9;">
-                Esperando alimento...
-            </div>
-
-            <div class="camera-actions">
-                <button class="btn btn-primary btn-block" id="action-camera-btn" onclick="capturarAlimentoActual()">📍 Analizar Alimento</button>
-            </div>
-        </div>
+                <div class="mode-card" onclick="selectScanMode('multiple')">
+                    <div class="mode-icon">🍇🥦</div>
+                    <div class="mode-info">
+                        <h4>Múltiples Productos</h4>
+                        <p>Escanea varios alimentos simultáneamente en tu nevera.</p>
+                    </div>
+                </div>
 
                 <div class="mode-card primary-border" onclick="switchScreen('screen-catalog')">
                     <div class="mode-icon">📖</div>
@@ -149,7 +144,8 @@
             </div>
             
             <div class="camera-view-container">
-                <video id="webcam" autoplay playsinline></video>
+                <div id="webcam-container"></div>
+                
                 <div class="scanner-overlay">
                     <div class="step-indicator" id="angle-step-banner" style="display:none;">
                         📸 PASO 1/3: Enfoque la parte frontal
@@ -164,6 +160,8 @@
                     </div>
                 </div>
             </div>
+
+            <div id="label-container" style="display: none;"></div>
 
             <div class="camera-actions">
                 <button class="btn btn-primary btn-block" id="action-camera-btn" onclick="triggerScanAction()">Capturar Ángulo Frontal</button>
@@ -302,133 +300,10 @@
         </div>
 
     </div>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-
-    <script type="text/javascript">
-        const URL_MODELO = "https://teachablemachine.withgoogle.com/models/mYtkJuB9Y/";
-        let model, webcam, maxPredictions;
-        let iaActiva = false;
-
-        // Función para encender la cámara e iniciar la IA
-        async function iniciarWebcamIA() {
-            if (iaActiva) return;
-            
-            const modelURL = URL_MODELO + "model.json";
-            const metadataURL = URL_MODELO + "metadata.json";
-            
-            document.getElementById("resultado-ia-vivo").innerText = "Cargando cerebro de IA...";
-            
-            try {
-                model = await tmImage.load(modelURL, metadataURL);
-                maxPredictions = model.getTotalClasses();
-
-                // Ajustamos el tamaño para que encaje perfectamente en el contenedor del smartphone
-                const flip = true; 
-                webcam = new tmImage.Webcam(280, 280, flip); 
-                await webcam.setup(); 
-                await webcam.play();
-                
-                iaActiva = true;
-                
-                // Limpiar contenedor y agregar el canvas de la cámara
-                const contenedor = document.getElementById("webcam-container");
-                contenedor.innerHTML = "";
-                contenedor.appendChild(webcam.canvas);
-                
-                window.requestAnimationFrame(loopIA);
-            } catch (error) {
-                console.error("Error al iniciar la cámara/IA:", error);
-                document.getElementById("resultado-ia-vivo").innerText = "Error al conectar la cámara.";
-            }
-        }
-
-        async function loopIA() {
-            if (!iaActiva) return;
-            webcam.update(); 
-            await predecirEnVivo();
-            window.requestAnimationFrame(loopIA);
-        }
-
-        // Predicción constante en tiempo real a 60 FPS
-        let alimentoActualDetectado = "";
-        async function predecirEnVivo() {
-            const prediction = await model.predict(webcam.canvas);
-            let mejorPrediccion = { className: "", probability: 0 };
-            
-            for (let i = 0; i < maxPredictions; i++) {
-                if (prediction[i].probability > mejorPrediccion.probability) {
-                    mejorPrediccion = prediction[i];
-                }
-            }
-
-            if (mejorPrediccion.probability > 0.70) {
-                alimentoActualDetectado = mejorPrediccion.className;
-                document.getElementById("resultado-ia-vivo").innerText = `Detectado: ${alimentoActualDetectado} (${Math.round(mejorPrediccion.probability * 100)}%)`;
-            } else {
-                alimentoActualDetectado = "";
-                document.getElementById("resultado-ia-vivo").innerText = "Escaneando... enfoca un alimento";
-            }
-        }
-
-        // Apagar la cámara cuando el usuario regrese al menú anterior
-        function detenerWebcam() {
-            iaActiva = false;
-            if (webcam) {
-                webcam.stop();
-            }
-            document.getElementById("webcam-container").innerHTML = "";
-        }
-
-        // Capturar la predicción actual y mandarla a Django
-        function capturarAlimentoActual() {
-            if (!alimentoActualDetectado) {
-                alert("Por favor, enfoca un alimento claramente antes de registrar.");
-                return;
-            }
-
-            let formData = new FormData();
-            formData.append('alimento', alimentoActualDetectado);
-
-            // Consumimos la API limpia de Django para el cálculo de caducidad
-            fetch('/api/registrar-alimento/', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    detenerWebcam();
-                    
-                    // Inyectamos las respuestas calculadas por Django en tu pantalla de resultados existentes
-                    document.getElementById("scanned-name").innerText = data.alimento;
-                    document.getElementById("scanned-status").innerText = data.estado;
-                    document.getElementById("scanned-description").innerText = data.mensaje;
-                    
-                    // Cambiar dinámicamente el emoji del resultado según lo que Django responda
-                    const emojiMap = {
-                        "Manzanas Frescas": "🍎", "Bananos Frescos": "🍌", "Pimientos Frescos": "🫑",
-                        "Pepinos Frescos": "🥒", "Naranjas Frescas": "🍊", "Papas Frescas": "🥔", 
-                        "Tomates Frescos": "🍅"
-                    };
-                    document.getElementById("scanned-emoji").innerText = emojiMap[data.alimento] || "🥗";
-
-                    // Cambiar a la pantalla de resultados que ya tienes diseñada
-                    switchScreen('screen-scan-result');
-                } else {
-                    alert("Error en el análisis del servidor: " + data.error);
-                }
-            })
-            .catch(error => {
-                console.error("Error conectando con Django:", error);
-                alert("Hubo un error al comunicar el escáner con el servidor de Django.");
-            });
-        }
-    </script>
-
-    <script src="app.js"></script>
-</body>
-</html>
+    
     <script src="app.js"></script>
 </body>
 </html>

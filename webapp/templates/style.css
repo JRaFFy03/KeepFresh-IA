@@ -206,3 +206,35 @@ body {
 .modal-content h3 { margin-top: 0; margin-bottom: 15px; color: var(--dark-text); font-size: 18px; }
 .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
 .modal-buttons .btn { flex: 1; padding: 10px; font-size: 13px; border-radius: 10px; }
+
+/* AJUSTES ADICIONALES PARA EL CANVAS DE TEACHABLE MACHINE */
+#webcam-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #111;
+}
+
+#webcam-container canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Evitar que las instrucciones de análisis interfieran con el clic del botón */
+.scanner-overlay {
+    pointer-events: none; 
+}
+
+/* Por defecto, todas las pantallas ocultas */
+.screen {
+    display: none; 
+}
+
+/* Solo se muestra la que tenga la clase active */
+.screen.active {
+    display: block; /* o flex, según tu diseño */
+}

@@ -1,3 +1,4 @@
+from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime, timedelta
@@ -55,4 +56,7 @@ def registrar_alimento_ia_view(request):
 
 def home_view(request):
     from django.shortcuts import render
+    return render(request, 'index.html')
+
+def home_view(request):
     return render(request, 'index.html')
