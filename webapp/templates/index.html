@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KeepFresh Prototype</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="smartphone-container">
+        
+        <div id="screen-welcome" class="screen active">
+            <div class="hero-header">
+                <img src="logo.png" alt="KeepFresh Logo" class="app-logo-welcome">
+                <h1>Bienvenido a <br><span>KeepFresh</span></h1>
+                <p class="tagline">think for nature</p>
+            </div>
+            <div class="welcome-actions">
+                <button class="btn btn-primary" onclick="switchScreen('screen-register')">Registrarse</button>
+                <button class="btn btn-secondary" onclick="switchScreen('screen-login')">Acceder</button>
+            </div>
+        </div>
+
+        <div id="screen-login" class="screen">
+            <div class="mini-header">
+                <h2>KeepFresh</h2>
+                <p>think for nature</p>
+            </div>
+            <div class="tabs">
+                <span class="tab" onclick="switchScreen('screen-register')">Registrarse</span>
+                <span class="tab active">Acceder</span>
+            </div>
+            <div class="form-container">
+                <h3>Accede en tu cuenta</h3>
+                <div class="input-group">
+                    <label>👤 Usuario</label>
+                    <input type="text" id="login-username" placeholder="Ingresa tu usuario" value="KeepFresh_User">
+                </div>
+                <div class="input-group">
+                    <label>🔒 Contraseña</label>
+                    <input type="password" id="login-password" placeholder="••••••••" value="password123">
+                </div>
+                <a class="forgot-link" onclick="switchScreen('screen-recovery')">¿Has olvidado tu contraseña?</a>
+                <button class="btn btn-primary btn-block" onclick="handleLogin()">Acceder</button>
+            </div>
+        </div>
+
+        <div id="screen-register" class="screen">
+            <div class="back-nav" onclick="switchScreen('screen-welcome')">⬅️ Volver</div>
+            <div class="mini-header">
+                <h2>KeepFresh</h2>
+                <p>think for nature</p>
+            </div>
+            <div class="tabs">
+                <span class="tab active">Registrarse</span>
+                <span class="tab" onclick="switchScreen('screen-login')">Acceder</span>
+            </div>
+            <div class="form-container scrollable">
+                <h3>Conviértete en parte del futuro</h3>
+                <div class="input-group">
+                    <label>✏️ Nombre</label>
+                    <input type="text" id="reg-name" placeholder="Tu nombre" value="José">
+                </div>
+                <div class="input-group">
+                    <label>✍️ Apellido</label>
+                    <input type="text" id="reg-lastname" placeholder="Tu apellido" value="Maldonado">
+                </div>
+                <div class="input-group">
+                    <label>👤 Usuario</label>
+                    <input type="text" id="reg-username" placeholder="Crea un usuario" value="KeepFresh_User">
+                </div>
+                <div class="input-group">
+                    <label>🔒 Contraseña</label>
+                    <input type="password" id="reg-password" placeholder="••••••••" value="password123">
+                </div>
+                <div class="input-group">
+                    <label>🪪 Cédula</label>
+                    <input type="text" id="reg-id" placeholder="Ej: 4-123-456" value="4-831-1204">
+                </div>
+                <button class="btn btn-primary btn-block" onclick="handleRegister()">Crear cuenta</button>
+            </div>
+        </div>
+
+        <div id="screen-recovery" class="screen">
+            <div class="back-nav" onclick="switchScreen('screen-login')">⬅️ Volver</div>
+            <div class="mini-header">
+                <h2>KeepFresh</h2>
+                <p>think for nature</p>
+            </div>
+            <div class="form-container">
+                <h3>Recupera tu cuenta</h3>
+                <div class="input-group">
+                    <label>👤 Usuario</label>
+                    <input type="text" placeholder="Tu usuario">
+                </div>
+                <div class="input-group">
+                    <label>🪪 Cédula</label>
+                    <input type="text" placeholder="Tu cédula registrada">
+                </div>
+                <button class="btn btn-primary btn-block" onclick="alert('Instrucciones enviadas')">Acceder</button>
+            </div>
+        </div>
+
+        <div id="screen-app-main" class="screen">
+            <div class="app-header">
+                <span class="back-arrow" onclick="detenerWebcam(); switchScreen('screen-scan-selector')">⬅️ Volver</span>
+                <span class="app-brand" id="camera-title-mode">Escáner IA</span>
+            </div>
+            
+            <div class="camera-view-container">
+                <div id="webcam-container"></div>
+                
+                <div class="scanner-overlay">
+                    <p class="scan-instructions" id="camera-instructions-text">Enfoque el producto para analizar en tiempo real.</p>
+                    <div class="scan-frame">
+                        <div class="corner top-left"></div>
+                        <div class="corner top-right"></div>
+                        <div class="corner bottom-left"></div>
+                        <div class="corner bottom-right"></div>
+                        <div class="scan-line"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="resultado-ia-vivo" style="text-align: center; font-size: 16px; font-weight: bold; color: #2e7d32; padding: 10px; background: rgba(255,255,255,0.9); margin: 0 20px; border-radius: 8px; border: 1px solid #c8e6c9;">
+                Esperando alimento...
+            </div>
+
+            <div class="camera-actions">
+                <button class="btn btn-primary btn-block" id="action-camera-btn" onclick="capturarAlimentoActual()">📍 Analizar Alimento</button>
+            </div>
+        </div>
+
+                <div class="mode-card primary-border" onclick="switchScreen('screen-catalog')">
+                    <div class="mode-icon">📖</div>
+                    <div class="mode-info">
+                        <h4>Catálogo Informativo</h4>
+                        <p>Consulta cuidados, conservación y recetas sin usar la cámara.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="screen-app-main" class="screen">
+            <div class="app-header">
+                <span class="back-arrow" onclick="switchScreen('screen-scan-selector')">⬅️ Volver</span>
+                <span class="app-brand" id="camera-title-mode">Escáner</span>
+            </div>
+            
+            <div class="camera-view-container">
+                <video id="webcam" autoplay playsinline></video>
+                <div class="scanner-overlay">
+                    <div class="step-indicator" id="angle-step-banner" style="display:none;">
+                        📸 PASO 1/3: Enfoque la parte frontal
+                    </div>
+                    <p class="scan-instructions" id="camera-instructions-text">Enfoque el producto para capturar.</p>
+                    <div class="scan-frame">
+                        <div class="corner top-left"></div>
+                        <div class="corner top-right"></div>
+                        <div class="corner bottom-left"></div>
+                        <div class="corner bottom-right"></div>
+                        <div class="scan-line"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="camera-actions">
+                <button class="btn btn-primary btn-block" id="action-camera-btn" onclick="triggerScanAction()">Capturar Ángulo Frontal</button>
+            </div>
+        </div>
+
+        <div id="screen-scan-result" class="screen">
+            <div class="app-header">
+                <span class="app-brand">Análisis de IA</span>
+            </div>
+            <div class="result-container">
+                <div class="result-image-placeholder" id="scanned-emoji">🍎</div>
+                <div class="result-details">
+                    <h2 id="scanned-name">Manzana Roja</h2>
+                    <p class="result-description" id="scanned-description"></p>
+                    <div class="status-badge fresh" id="scanned-status">Fresco</div>
+                </div>
+            </div>
+            <div class="result-actions">
+                <button class="btn btn-secondary" onclick="switchScreen('screen-scan-selector')">Descartar</button>
+                <button class="btn btn-primary" onclick="addScannedToHistory()">📍 Registrar Alimento</button>
+            </div>
+        </div>
+
+        <div id="screen-profile" class="screen main-app-view">
+            <div class="app-header">
+                <span class="app-brand">Mi Perfil</span>
+            </div>
+            <div class="profile-scroll-container scroll-container-view" onscroll="handleScrollDetection(this)">
+                <div class="profile-avatar-section">
+                    <div class="profile-avatar">👤</div>
+                    <h2 id="profile-display-name">José</h2>
+                    <p class="profile-sub">Maldonado</p>
+                </div>
+
+                <div class="profile-data-list">
+                    <div class="profile-data-item">
+                        <span class="data-label">Nombre</span>
+                        <span class="data-value" id="profile-val-name">José</span>
+                    </div>
+                    <div class="profile-data-item">
+                        <span class="data-label">Cédula</span>
+                        <span class="data-value" id="profile-val-id">4-831-1204</span>
+                    </div>
+                    <div class="profile-data-item">
+                        <span class="data-label">Usuario</span>
+                        <span class="data-value" id="profile-val-user">KeepFresh_User</span>
+                    </div>
+                    <div class="profile-data-item" onclick="openBioModal()">
+                        <span class="data-label">Biografía</span>
+                        <span class="data-value editable" id="profile-val-bio">Ingresa biografía ></span>
+                    </div>
+                </div>
+
+                <div style="padding: 15px 20px 5px 20px;">
+                    <button class="btn btn-secondary btn-block" style="padding:10px; font-size:14px;" onclick="openPassModal()">Cambiar contraseña</button>
+                </div>
+                <div style="padding: 5px 20px 20px 20px;">
+                    <button class="btn btn-block" style="padding:10px; font-size:14px; background-color:#ffcbd2; color:#b71c1c;" onclick="logout()">🛑 Cerrar Sesión</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="screen-history" class="screen main-app-view">
+            <div class="app-header">
+                <span class="app-brand">Historial Global</span>
+            </div>
+            <div class="history-container scroll-container-view" onscroll="handleScrollDetection(this)">
+                <div class="history-header-actions">
+                    <h4 class="section-title">Alimentos Registrados</h4>
+                    <button id="clear-all-btn" class="clear-history-btn" onclick="clearEntireHistory()">Vaciar Todo</button>
+                </div>
+                <div id="history-list" class="history-list-wrapper"></div>
+            </div>
+        </div>
+
+        <div id="screen-catalog" class="screen main-app-view">
+            <div class="app-header">
+                <span class="app-brand">Guía EcoFresh</span>
+            </div>
+            <div class="catalog-tabs">
+                <span id="tab-cat-fruits" class="cat-tab active" onclick="switchCatalogTab('fruits')">Frutas 🍎</span>
+                <span id="tab-cat-vegetables" class="cat-tab" onclick="switchCatalogTab('vegetables')">Verduras 🥦</span>
+            </div>
+            <div class="catalog-content-container scroll-container-view" onscroll="handleScrollDetection(this)">
+                <p class="catalog-intro-text">Toca un alimento para descubrir sus fechas de caducidad, cuidados y planes ecológicos de reciclaje.</p>
+                <div id="catalog-list" class="catalog-list-wrapper"></div>
+            </div>
+        </div>
+
+        <div id="app-bottom-nav" class="bottom-navigation-bar" style="display: none;">
+            <div id="nav-item-home" class="nav-button active" onclick="switchScreen('screen-scan-selector')">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-text">Inicio</span>
+            </div>
+            <div id="nav-item-catalog" class="nav-button" onclick="switchScreen('screen-catalog')">
+                <span class="nav-icon">📖</span>
+                <span class="nav-text">Guía</span>
+            </div>
+            <div id="nav-item-history" class="nav-button" onclick="switchScreen('screen-history')">
+                <span class="nav-icon">📋</span>
+                <span class="nav-text">Historial</span>
+            </div>
+            <div id="nav-item-profile" class="nav-button" onclick="switchScreen('screen-profile')">
+                <span class="nav-icon">👤</span>
+                <span class="nav-text">Perfil</span>
+            </div>
+        </div>
+
+        <div id="modal-bio" class="modal-overlay">
+            <div class="modal-content">
+                <h3>Modificar Biografía</h3>
+                <div class="input-group">
+                    <label>Biografía</label>
+                    <textarea id="input-new-bio" rows="3" placeholder="Escribe algo sobre ti..."></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button class="btn btn-secondary" onclick="closeBioModal()">Cancelar</button>
+                    <button class="btn btn-primary" onclick="saveBio()">Cambiar</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-password" class="modal-overlay">
+            <div class="modal-content">
+                <h3>Cambio de Contraseña</h3>
+                <div class="input-group">
+                    <label>Nueva Contraseña</label>
+                    <input type="password" id="input-new-pass" placeholder="Ingresa tu nueva contraseña">
+                </div>
+                <div class="modal-buttons">
+                    <button class="btn btn-secondary" onclick="closePassModal()">Cancelar</button>
+                    <button class="btn btn-primary" onclick="savePassword()">Cambiar</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+
+    <script type="text/javascript">
+        const URL_MODELO = "https://teachablemachine.withgoogle.com/models/mYtkJuB9Y/";
+        let model, webcam, maxPredictions;
+        let iaActiva = false;
+
+        // Función para encender la cámara e iniciar la IA
+        async function iniciarWebcamIA() {
+            if (iaActiva) return;
+            
+            const modelURL = URL_MODELO + "model.json";
+            const metadataURL = URL_MODELO + "metadata.json";
+            
+            document.getElementById("resultado-ia-vivo").innerText = "Cargando cerebro de IA...";
+            
+            try {
+                model = await tmImage.load(modelURL, metadataURL);
+                maxPredictions = model.getTotalClasses();
+
+                // Ajustamos el tamaño para que encaje perfectamente en el contenedor del smartphone
+                const flip = true; 
+                webcam = new tmImage.Webcam(280, 280, flip); 
+                await webcam.setup(); 
+                await webcam.play();
+                
+                iaActiva = true;
+                
+                // Limpiar contenedor y agregar el canvas de la cámara
+                const contenedor = document.getElementById("webcam-container");
+                contenedor.innerHTML = "";
+                contenedor.appendChild(webcam.canvas);
+                
+                window.requestAnimationFrame(loopIA);
+            } catch (error) {
+                console.error("Error al iniciar la cámara/IA:", error);
+                document.getElementById("resultado-ia-vivo").innerText = "Error al conectar la cámara.";
+            }
+        }
+
+        async function loopIA() {
+            if (!iaActiva) return;
+            webcam.update(); 
+            await predecirEnVivo();
+            window.requestAnimationFrame(loopIA);
+        }
+
+        // Predicción constante en tiempo real a 60 FPS
+        let alimentoActualDetectado = "";
+        async function predecirEnVivo() {
+            const prediction = await model.predict(webcam.canvas);
+            let mejorPrediccion = { className: "", probability: 0 };
+            
+            for (let i = 0; i < maxPredictions; i++) {
+                if (prediction[i].probability > mejorPrediccion.probability) {
+                    mejorPrediccion = prediction[i];
+                }
+            }
+
+            if (mejorPrediccion.probability > 0.70) {
+                alimentoActualDetectado = mejorPrediccion.className;
+                document.getElementById("resultado-ia-vivo").innerText = `Detectado: ${alimentoActualDetectado} (${Math.round(mejorPrediccion.probability * 100)}%)`;
+            } else {
+                alimentoActualDetectado = "";
+                document.getElementById("resultado-ia-vivo").innerText = "Escaneando... enfoca un alimento";
+            }
+        }
+
+        // Apagar la cámara cuando el usuario regrese al menú anterior
+        function detenerWebcam() {
+            iaActiva = false;
+            if (webcam) {
+                webcam.stop();
+            }
+            document.getElementById("webcam-container").innerHTML = "";
+        }
+
+        // Capturar la predicción actual y mandarla a Django
+        function capturarAlimentoActual() {
+            if (!alimentoActualDetectado) {
+                alert("Por favor, enfoca un alimento claramente antes de registrar.");
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append('alimento', alimentoActualDetectado);
+
+            // Consumimos la API limpia de Django para el cálculo de caducidad
+            fetch('/api/registrar-alimento/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    detenerWebcam();
+                    
+                    // Inyectamos las respuestas calculadas por Django en tu pantalla de resultados existentes
+                    document.getElementById("scanned-name").innerText = data.alimento;
+                    document.getElementById("scanned-status").innerText = data.estado;
+                    document.getElementById("scanned-description").innerText = data.mensaje;
+                    
+                    // Cambiar dinámicamente el emoji del resultado según lo que Django responda
+                    const emojiMap = {
+                        "Manzanas Frescas": "🍎", "Bananos Frescos": "🍌", "Pimientos Frescos": "🫑",
+                        "Pepinos Frescos": "🥒", "Naranjas Frescas": "🍊", "Papas Frescas": "🥔", 
+                        "Tomates Frescos": "🍅"
+                    };
+                    document.getElementById("scanned-emoji").innerText = emojiMap[data.alimento] || "🥗";
+
+                    // Cambiar a la pantalla de resultados que ya tienes diseñada
+                    switchScreen('screen-scan-result');
+                } else {
+                    alert("Error en el análisis del servidor: " + data.error);
+                }
+            })
+            .catch(error => {
+                console.error("Error conectando con Django:", error);
+                alert("Hubo un error al comunicar el escáner con el servidor de Django.");
+            });
+        }
+    </script>
+
+    <script src="app.js"></script>
+</body>
+</html>
+    <script src="app.js"></script>
+</body>
+</html>
