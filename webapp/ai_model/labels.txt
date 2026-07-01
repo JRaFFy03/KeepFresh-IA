@@ -1,0 +1,18 @@
+0 Manzanas Frescas
+1 Manzanas podridas 
+2 Banana Fresca
+3 Banana podrida
+4 Melón Amargo Fresco
+5 Melón Amargo Podrido
+6 Pimientos Frescos
+7 Pimientos Podridos
+8 Pepinos Frescos
+9 Pepinos Podridos
+10 Ocras Frescas
+11 Ocras Podridas
+12 Naranjas Frescas
+13 Naranjas Podridas
+14 Papas Frescas
+15 Papas Podridas
+16 Tomates Frescos
+17 Tomates Podridos
