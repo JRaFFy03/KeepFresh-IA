@@ -464,3 +464,4 @@ function savePassword() {
 function logout() { switchScreen('screen-welcome'); }
 
 window.onload = function() { updateUIElements(); };
+

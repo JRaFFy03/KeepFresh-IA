@@ -1,10 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KeepFresh Prototype</title>
-    <link rel="stylesheet" href="style.css">
     <script src="app.js"></script>
 </head>
 <body>
@@ -13,7 +13,8 @@
         
         <div id="screen-welcome" class="screen active">
             <div class="hero-header">
-                <img src="logo.png" alt="KeepFresh Logo" class="app-logo-welcome">
+                <img src="{% static 'logo.png' %}" alt="KeepFresh Logo" class="app-logo-welcome">
+                <link rel="stylesheet" href="{% static 'style.css' %}">
                 <h1>Bienvenido a <br><span>KeepFresh</span></h1>
                 <p class="tagline">think for nature</p>
             </div>
@@ -302,8 +303,9 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-    
-    <script src="app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+<script src="{% static 'app.js' %}"></script>
+</body>
+</html>
 </body>
 </html>
